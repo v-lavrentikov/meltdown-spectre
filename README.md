@@ -113,7 +113,7 @@ Byte status can be one of:
 - `Unclear` - the result is unclear, check also the second guess
 - `Zero` - the result is defined, but a zero byte with best score was detected (see ZEROS column). Read more about this case in the original Meltdown [paper](https://meltdownattack.com/meltdown.pdf)
 - `Undefined` - no results, byte undefined
-## Implementation for windows
+## Implementation for Windows
 Spectre V1 and V4 examples can be compiled for Windows using the MinGW compiler. While Meltdown implementation uses POSIX signals that are not fully supported on Windows.
 #### Build
 ```bash
@@ -121,13 +121,13 @@ make win
 ```
 #### Run
 ```bash
-./spectre_v1.exe [address] [length]
+spectre_v1.exe [address] [length]
 ```
 ```bash
-./spectre_v4.exe [address] [length]
+spectre_v4.exe [address] [length]
 ```
 ```bash
-./spectre_v4_asm.exe [address] [length]
+spectre_v4_asm.exe [address] [length]
 ```
 Run examples without arguments to read data from local process memory.
 ## Additional Information
@@ -152,7 +152,8 @@ sudo update-grub
 * [Spectre Paper](https://spectreattack.com/spectre.pdf)
 * [Meltdown Paper](https://meltdownattack.com/meltdown.pdf)
 * [Meltdown Source Code](https://github.com/IAIK/meltdown)
-* [CVE-2017-5715: Spectre V2 - Branch Target Injection](https://nvd.nist.gov/vuln/detail/CVE-2017-5715)
-* [CVE-2017-5753: Spectre V1](https://nvd.nist.gov/vuln/detail/CVE-2017-5753)
-* [CVE-2017-5754: Meltdown](https://nvd.nist.gov/vuln/detail/CVE-2017-5754)
-* [CVE-2018-3639: Spectre V4 - Speculative Store Bypass](https://nvd.nist.gov/vuln/detail/CVE-2018-3639)
+* [CVE-2017-5715: Spectre Variant 2 - Branch Target Injection](https://nvd.nist.gov/vuln/detail/CVE-2017-5715)
+* [CVE-2017-5753: Spectre Variant 1 - Bounds Check Bypass](https://nvd.nist.gov/vuln/detail/CVE-2017-5753)
+* [CVE-2017-5754: Meltdown Variant 3 - Rogue Data Cache Load](https://nvd.nist.gov/vuln/detail/CVE-2017-5754)
+* [CVE-2018-3639: Spectre Variant 4 - Speculative Store Bypass](https://nvd.nist.gov/vuln/detail/CVE-2018-3639)
+* [CVE-2018-3640: Meltdown Variant 3a - Rogue System Register Read](https://nvd.nist.gov/vuln/detail/CVE-2018-3640)
