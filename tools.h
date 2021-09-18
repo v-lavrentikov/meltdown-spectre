@@ -26,7 +26,7 @@ typedef struct {
     };
     union {
         uint8_t unused4[CACHE_PAGE];    // Memory separator
-        uint8_t array1[16];             // Array with valid indexes (for Spectre V1/V2)
+        uint8_t array1[16];             // Array with valid indexes (for Spectre V1/V4)
     };
     uint8_t array2[256 * CACHE_PAGE];   // Array for Flush+Reload tests
     uint8_t unused5[CACHE_PAGE];        // Memory separator

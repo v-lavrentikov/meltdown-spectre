@@ -6,36 +6,36 @@ The Meltdown implementation contains three types of malicious payload that were 
 - meltdown_nonull
 - meltdown_fast
 #### Build
-```bash
+```
 make
 ```
 or
-```bash
+```
 make meltdown
 ```
 #### Run
-```bash
+```
 ./meltdown [address] [length]
 ```
-```bash
+```
 ./meltdown_nonull [address] [length]
 ```
-```bash
+```
 ./meltdown_fast [address] [length]
 ```
 Run examples without arguments to read data from local process memory.
 ## Spectre Variant 1 [(CVE-2017-5753)](https://nvd.nist.gov/vuln/detail/CVE-2017-5753)
 Spectre implementation from the original Spectre [paper](https://spectreattack.com/spectre.pdf).
 #### Build
-```bash
+```
 make
 ```
 or
-```bash
+```
 make spectre_v1
 ```
 #### Run
-```bash
+```
 ./spectre_v1 [address] [length]
 ```
 Run example without arguments to read data from local process memory.
@@ -44,18 +44,18 @@ Implementation of the Speculative Store Bypass, aka Spectre V4. This vulnerabili
 - spectre_v4
 - spectre_v4_asm
 #### Build
-```bash
+```
 make
 ```
 or
-```bash
+```
 make spectre_v4
 ```
 #### Run
-```bash
+```
 ./spectre_v4 [address] [length]
 ```
-```bash
+```
 ./spectre_v4_asm [address] [length]
 ```
 Run examples without arguments to read data from local process memory.
@@ -116,24 +116,24 @@ Byte status can be one of:
 ## Implementation for Windows
 Spectre V1 and V4 examples can be compiled for Windows using the MinGW compiler. While Meltdown implementation uses POSIX signals that are not fully supported on Windows.
 #### Build
-```bash
+```
 make win
 ```
 #### Run
-```bash
+```
 spectre_v1.exe [address] [length]
 ```
-```bash
+```
 spectre_v4.exe [address] [length]
 ```
-```bash
+```
 spectre_v4_asm.exe [address] [length]
 ```
 Run examples without arguments to read data from local process memory.
 ## Additional Information
 ### Check Meldown and Spectre protection on Linux
 Run commands:
-```bash
+```
 $ cat /sys/devices/system/cpu/vulnerabilities/meltdown
 Vulnerable    
 $ cat /sys/devices/system/cpu/vulnerabilities/spectre_v1
@@ -145,7 +145,7 @@ Add or change this line in the file `/etc/default/grub`
 GRUB_CMDLINE_LINUX="nospectre_v1 nopti"
 ```
 Then run command:
-```bash
+```
 sudo update-grub
 ```
 ## References
