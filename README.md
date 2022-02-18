@@ -40,7 +40,7 @@ make spectre_v1
 ```
 Run example without arguments to read data from local process memory.
 ## Spectre Variant 4 [(CVE-2018-3639)](https://nvd.nist.gov/vuln/detail/CVE-2018-3639)
-Implementation of the Speculative Store Bypass, aka Spectre V4. This vulnerability works worse than Meltdown or Spectre V1 and doesn't work under VW. Code contains two variants of the malicious payload. The first variant is written in C and its instructions are compiler-dependent. For example, GCC does unnecessary register manipulation. The second variant is written in assembly language and remains unmodified after compilation.
+Implementation of the Speculative Store Bypass, aka Spectre V4. This vulnerability works worse than Meltdown or Spectre V1 and doesn't work under Virtual Machine. Code contains two variants of the malicious payload. The first variant is written in C and its instructions are compiler-dependent. For example, GCC does unnecessary register manipulation. The second variant is written in assembly language and remains unmodified after compilation.
 - spectre_v4
 - spectre_v4_asm
 #### Build

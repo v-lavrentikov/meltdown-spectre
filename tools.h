@@ -15,21 +15,21 @@
         : "rax","rbx","rcx","rdx","memory");
 
 typedef struct {
-    uint8_t unused1[CACHE_PAGE];        // Memory separator
+    uint8_t unused_1[CACHE_PAGE];       // Memory separator
     union {
-        uint8_t unused2[CACHE_PAGE];    // Memory separator
         size_t x;                       // Valid array index for speculative storage (for Spectre V4)
+        uint8_t unused_2[CACHE_PAGE];   // Memory separator
     };
     union {
-        uint8_t unused3[CACHE_PAGE];    // Memory separator
-        unsigned int array1_size;       // Array size for misprediction (for Spectre V1)
+        size_t indices_size;            // Indices array size (for Spectre V1/V4)
+        uint8_t unused_3[CACHE_PAGE];   // Memory separator
     };
     union {
-        uint8_t unused4[CACHE_PAGE];    // Memory separator
-        uint8_t array1[16];             // Array with valid indexes (for Spectre V1/V4)
+        uint8_t indices[16];            // Array with valid indices (for Spectre V1/V4)
+        uint8_t unused_4[CACHE_PAGE];   // Memory separator
     };
-    uint8_t array2[256 * CACHE_PAGE];   // Array for Flush+Reload tests
-    uint8_t unused5[CACHE_PAGE];        // Memory separator
+    uint8_t table[256 * CACHE_PAGE];    // Array for Flush+Reload tests
+    uint8_t unused_5[CACHE_PAGE];       // Memory separator
 } memory_buffer_t;
 
 extern char *secret;

