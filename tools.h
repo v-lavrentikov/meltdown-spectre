@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdint.h>
 
-#define CACHE_PAGE      4096
+#define CACHE_PAGE      4096            // 2^12 -> shl $12, %rax
 
 #define flush_pipeline                      \
     asm volatile(                           \

