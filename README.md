@@ -1,5 +1,5 @@
 # Meltdown / Spectre
-This repository contains code that demonstrates how Meltdown and Spectre vulnerabilities work and shows the differences between them. It also contains measurement functions for comparing results.
+This project contains code that demonstrates how Meltdown and Spectre vulnerabilities work and shows the differences between them. It also contains measurement functions for comparing results.
 ## Meltdown [(CVE-2017-5754)](https://nvd.nist.gov/vuln/detail/CVE-2017-5754)
 The Meltdown implementation contains three types of malicious payload that were introduced in the original Meltdown [repository](https://github.com/IAIK/meltdown).
 - meltdown
@@ -144,7 +144,7 @@ Add or change this line in the file `/etc/default/grub`
 ```
 GRUB_CMDLINE_LINUX="nospectre_v1 nopti"
 ```
-Then run command:
+Then run the following command and reboot the system:
 ```
 sudo update-grub
 ```
